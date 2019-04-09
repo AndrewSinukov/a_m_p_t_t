@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="">
+<head>
+    <meta charset="UTF-8">
+    {% block stylesheets %}
+        <link href="{{ asset('https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css') }}"
+              type="text/css" rel="stylesheet"/>
+    {% endblock %}
+
+    {% block endjavascripts %}
+        <script src="{{ asset('https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js') }}"
+                type="text/javascript"></script>
+    {% endblock %}
+
+    <title>{% block title %}Test Application{% endblock %}</title>
+</head>
+{% block header %}
+    <div class="container body-container">
+        <header>
+            <div class="navbar navbar-default navbar-static-top" role="navigation">
+                <div class="container">
+                    <div class="col-md-6">
+                        <a class="navbar-brand" href="{{ path('homepage') }}">
+                            The Amo Media Project Test Task
+                        </a>
+                    </div>
+                    <div class="col-md-6">
+                        <form action="{{ path('search') }}" method="get">
+                            <input name="query" class="form-control search-field" placeholder="Search for..."
+                                   autocomplete="off" autofocus="" data-no-results-message="No results found">
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </header>
+        {% block body %}
+            <div class="row">
+                <div id="main" class="col-sm-12">
+                    {% block main %}{% endblock %}
+                </div>
+            </div>
+        {% endblock %}
+    </div>
+{% endblock %}
+
+{% block footer %}
+    <footer>
+        <div class="container">
+            <div class="row">
+                <div id="footer-copyright" class="col-md-4">
+                    <p>&copy; {{ 'now'|date('Y') }} - The Amo Media Project Test Task</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+{% endblock %}
+
+{% block javascripts %}
+{% endblock %}
+
+</body>
+</html>

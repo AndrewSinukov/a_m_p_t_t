@@ -1,0 +1,41 @@
+homepage:
+  path: /
+  methods: [GET]
+  defaults: { _controller: "ProfileBundle:ProfileCRUDL:index" }
+
+profile.create:
+  path: /profiles
+  methods: [POST]
+  defaults: { _controller: "ProfileBundle:ProfileCRUDL:create" }
+
+search:
+  path: /search
+  methods: [GET]
+  defaults: { _controller: "ProfileBundle:ProfileCRUDL:search" }
+
+profile.read:
+  path: /profiles/{id}
+  requirements:
+    id: \d+
+  methods: [GET]
+  defaults: { _controller: "ProfileBundle:ProfileCRUDL:read" }
+
+profile.update:
+  path: /profiles/{id}
+  requirements:
+    id: \d+
+  methods: [PUT, PATCH]
+  defaults: { _controller: "ProfileBundle:ProfileCRUDL:update" }
+
+profile.list:
+  path: /profiles
+  methods: [GET]
+  defaults: { _controller: "ProfileBundle:ProfileCRUDL:list" }
+
+profile.delete:
+  path: /profiles/{id}
+  requirements:
+    id: \d+
+  methods: [DELETE]
+  defaults: { _controller: "ProfileBundle:ProfileCRUDL:delete" }
+

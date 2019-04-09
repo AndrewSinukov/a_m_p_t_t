@@ -1,0 +1,38 @@
+parameters:
+    # Adds a fallback DATABASE_URL if the env var is not set.
+    # This allows you to run cache:warmup even if your
+    # environment variables are not available yet.
+    # You should not need to change this value.
+    env(DATABASE_URL): ''
+
+doctrine:
+    dbal:
+        # configure these for your database server
+        driver: 'pdo_mysql'
+        server_version: '5.7'
+        charset: UTF8
+        default_table_options:
+            charset: utf8mb4
+            collate: utf8mb4_unicode_ci
+        types:
+             uuid:  Ramsey\Uuid\Doctrine\UuidType
+        url: '%env(DATABASE_URL)%'
+        slaves:
+            slave_1:
+                host: '%env(DATABASE_HOST)%'
+                port: 3306
+                dbname: amo_media_test_task
+                user: root
+                password: root
+                charset: UTF8
+    orm:
+        auto_generate_proxy_classes: true
+        naming_strategy: doctrine.orm.naming_strategy.underscore
+        auto_mapping: true
+        mappings:
+            App\ProfileBundle:
+                is_bundle: false
+                type: annotation
+                dir: '%kernel.project_dir%/src/ProfileBundle/Entity'
+                prefix: 'App\ProfileBundle\Entity'
+                alias: App

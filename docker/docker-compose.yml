@@ -1,0 +1,137 @@
+version: '3.7'
+services:
+    mysql:
+        image: mysql
+        container_name: amo_media_mysql
+        environment:
+          MYSQL_DATABASE: amo_media_test_task
+          MYSQL_USER: root
+          MYSQL_PASSWORD: root
+          MYSQL_ROOT_PASSWORD: root
+        networks:
+            amo_backend:
+              ipv4_address: 172.22.0.9
+        ports:
+          - 3306:3306
+        expose:
+          - 3306
+        volumes:
+          - mysql_data:/var/lib/mysql
+    phpmyadmin:
+        image: phpmyadmin/phpmyadmin
+        container_name: amo_media_phpmyadmin
+        links:
+          - mysql:db
+        depends_on:
+          - mysql
+        networks:
+            amo_backend:
+              ipv4_address: 172.22.0.2
+        ports:
+          - 8080:80
+        environment:
+          MYSQL_USERNAME: root
+          MYSQL_ROOT_PASSWORD: root
+          PMA_PORT: 3306
+    php:
+        build: ./php-fpm
+        container_name: amo_media_php
+        networks:
+          - amo_backend
+        volumes:
+            - ../symfony:/var/www/symfony:cached
+            - ./logs/symfony:/var/www/symfony/var/log:cached
+        links:
+          - mysql
+          - redis
+        extra_hosts:
+            - "docker-host.localhost:127.0.0.1"
+    nginx:
+        build: ./nginx
+        container_name: amo_media_nginx
+        ports:
+          - 80:80
+        networks:
+         - amo_backend
+        links:
+          - php
+        volumes:
+          - ./logs/nginx:/var/log/nginx:cached
+    elasticsearch:
+        image: docker.elastic.co/elasticsearch/elasticsearch:6.4.0
+        container_name: amo_media_elasticsearch
+        ports:
+          - 9200:9200
+        networks:
+            amo_backend:
+              ipv4_address: 172.22.0.5
+        environment:
+          - discovery.type=single-node
+          - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+        ulimits:
+          memlock:
+            soft: -1
+            hard: -1
+        volumes:
+          - es_data:/usr/share/elasticsearch/data
+    redis:
+        image: redis
+        container_name: amo_media_redis
+        ports:
+          - 6379:6379
+        networks:
+            amo_backend:
+              ipv4_address: 172.22.0.6
+        hostname: redis
+        volumes:
+          - redis_data:/var/lib/redis
+        links:
+          - redis-commander
+    redis-commander:
+        image: rediscommander/redis-commander:latest
+        container_name: amo_media_redis_commander
+        hostname: redis-commander
+        ports:
+          - 8081:8081
+        networks:
+            amo_backend:
+              ipv4_address: 172.22.0.7
+        environment:
+          - REDIS_HOSTS=redis
+    rabbit:
+      image: "rabbitmq:3-management"
+      container_name: amo_media_rabbit
+      ports:
+        - 15672:15672
+        - 5672:5672
+      networks:
+          amo_backend:
+            ipv4_address: 172.22.0.8
+      hostname: "rabbit"
+      environment:
+        RABBITMQ_ERLANG_COOKIE: "SWQOKODSQALRPCLNMEQG"
+        RABBITMQ_DEFAULT_USER: "rabbitmq"
+        RABBITMQ_DEFAULT_PASS: "rabbitmq"
+        RABBITMQ_DEFAULT_VHOST: "/"
+      labels:
+        NAME: "rabbitmq"
+      volumes:
+        - rabbit_data:/data
+
+volumes:
+  mysql_data: {}
+  redis_data: {}
+  rabbit_data: {}
+  es_data: {}
+
+networks:
+  bridge:
+      external: true
+  amo_backend:
+#    driver: bridge
+#    driver_opts:
+#      com.docker.network.enable_ipv6: "false"
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.22.0.0/16

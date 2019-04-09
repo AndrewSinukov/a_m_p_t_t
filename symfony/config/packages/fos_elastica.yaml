@@ -1,0 +1,22 @@
+fos_elastica:
+    clients:
+        default:
+            host: '%env(ELASTICA_HOST)%'
+            port: '%env(ELASTICA_PORT)%'
+    indexes:
+        app:
+            types:
+                user:
+                    properties:
+                        firstname: ~
+                        lastname: ~
+                        phonenumber: ~
+                    persistence:
+                        driver: orm
+                        model: App\ProfileBundle\Entity\Profile
+                        provider: ~
+                        listener:
+                            insert: true
+                            update: true
+                            delete: true
+                        finder: ~

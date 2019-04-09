@@ -1,0 +1,2 @@
+profile:
+  resource: "@ProfileBundle/Resources/config/routing.yml"
